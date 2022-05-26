@@ -5,51 +5,37 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
+#include "glm/trigonometric.hpp"
 #include "window.h"
 #include "shader.h"
 
 int main()
 {
-    glfwInit();
-
-    // 4.4
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif // __APPLE__
-
-    GLFWwindow* window = glfwCreateWindow(1920, 1080, "Cgl", nullptr, nullptr);
-    if (window == nullptr)
+    WindowProperties properties;
+    properties.x = 0;
+    properties.y = 0;
+    properties.width = 1920;
+    properties.height= 1080;
+    properties.title ="Cgl";
+    properties.end = render_backend::OPENGL;
+    Window window(properties);
+    if (!window.IsSuccess())
     {
-        return -1;
+        // error;
     }
-    glfwMakeContextCurrent(window);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        return -1;
-    }
-    glViewport(0, 0, 1920, 1080);
-
-    auto call_back = [](GLFWwindow* window, int width, int height){
-        glViewport(0,0, width, height);
-    };
-    glfwSetFramebufferSizeCallback(window, call_back);
-
-    auto process_input = [=]() {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        {
-            glfwSetWindowShouldClose(window, true);
-        } 
-    };
 
     ShaderProgram program("../asset/vertex_core.vert", "../asset/fragment.frag");
-
+    if (!program.IsSuccess())
+    {
+        std::cerr << program.GetErrorMsg() << std::endl;
+        return -1;
+    }
     float vertices[] = {
         // pos               // color
          0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
@@ -57,14 +43,10 @@ int main()
         -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
          0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
     };
-
-    std::cout << sizeof(float) <<" " << sizeof(vertices)<<std::endl;
-
     uint32_t indices[] = {
         0,1,2,
         3,0,2
     };
-    std::cout << sizeof(indices) << std::endl;
 
     std::vector<VertexBufferLayout> layout = {
         {3, 3 * sizeof(float), GL_FLOAT},
@@ -81,28 +63,20 @@ int main()
     index_buferr.Bind();
     index_buferr.CopyDataToGpu(indices, sizeof(indices));
 
+    glm::mat4 trans = glm::mat4(1.f);
+    trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(0, 0, 1.f));
 
-    if (!program.IsSuccess())
-    {
-        std::cerr << program.GetErrorMsg() << std::endl;
-    }
-
-    while (!glfwWindowShouldClose(window)) {
-        process_input();
-
+    while (!window.isClosed()) {
+        window.PollEvent();
         program.Use();
-
+        trans = glm::rotate(trans,glm::radians((float)glfwGetTime()/20.f), glm::vec3(0, 0, 1.f));
+        program.SetUniformMatrix("transform", trans);
         glClearColor(0.2,0.3,0.3,1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         vertex_buffer.Bind();
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
         index_buferr.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glfwPollEvents();
-        glfwSwapBuffers(window);
+        window.SwapBuffer();
     }
-
-     glfwDestroyWindow(window);
-    // glfwTerminate();
     return 0;
 }

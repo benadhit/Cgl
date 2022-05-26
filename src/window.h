@@ -24,6 +24,10 @@ enum class BufferType
     ALL,
 };
 
+struct IO {
+
+};
+
 class Window {
 public:
     Window(const WindowProperties& properties);
@@ -33,6 +37,12 @@ public:
     bool Resize(int width, int height);
     void ClearWindow(float r, float g , float b , float a, 
         BufferType buffer = BufferType::COLOR_BUFFER);
+
+    void PollEvent();
+
+    bool isClosed();
+
+    void SwapBuffer();
         
 private:
     std::unique_ptr<struct WindowImpl> impl_;

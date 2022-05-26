@@ -8,6 +8,7 @@ add_subdirectory(thirdparty/glm)
 add_executable(Cgl 
     thirdparty/glad/src/glad.c
     src/shader.cpp
+    src/Linux/LinuxWindow.cpp
     src/VertexBuffer.cpp
     src/IndexBuffer.cpp
     src/utils.cpp

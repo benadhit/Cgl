@@ -48,3 +48,4 @@ void VertexBuffer::CopyDataToGpu(void* data, size_t size)
     this->total_size = size;
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
+

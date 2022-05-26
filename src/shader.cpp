@@ -1,7 +1,8 @@
 #include "shader.h"
 #include "utils.h"
 #include <glad/glad.h>
-
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 ShaderProgram::ShaderProgram(const char* vert, const char* frag)
 {
@@ -45,4 +46,36 @@ bool ShaderProgram::IsSuccess()
 void ShaderProgram::Use()
 {
     glUseProgram(program_handle);
+}
+
+void ShaderProgram::SetUniformMatrix(const char* name, glm::mat4& value)
+{
+    return glUniformMatrix4fv(GetUniformLocation(name),1, GL_FALSE,glm::value_ptr(value));
+}
+
+uint32_t ShaderProgram::GetUniformLocation(const char* name)
+{
+    return glGetUniformLocation(program_handle,name);
+}
+
+void ShaderProgram::SetUniformVec(const char* name, glm::vec4& value)
+{
+    return glUniform4fv(GetUniformLocation(name),1, glm::value_ptr(value));
+}
+
+void ShaderProgram::SetUniformVec(const char* name, glm::vec3& value)
+{
+    return glUniform3fv(GetUniformLocation(name),1, glm::value_ptr(value));
+}
+void ShaderProgram::SetUniformVec(const char* name, glm::vec2& value)
+{
+    return glUniform2fv(GetUniformLocation(name),1, glm::value_ptr(value));
+}
+void ShaderProgram::SetUniform(const char* name, float value)
+{
+    return glUniform1f(GetUniformLocation(name), value);
+}
+void ShaderProgram::SetUniform(const char* name, int value)
+{
+   return glUniform1i(GetUniformLocation(name), value);
 }

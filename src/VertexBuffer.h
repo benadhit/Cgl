@@ -24,7 +24,7 @@ struct VertexBufferLayout
     uint32_t elem_type;
 };
 
-class VertexBuffer{
+class VertexBuffer {
 public:
     VertexBuffer();
 
