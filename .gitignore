@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Prerequisites
 *.d
 
@@ -30,3 +31,9 @@
 *.exe
 *.out
 *.app
+
+.cache
+build/
+/thirdparty
+.vscode
+
