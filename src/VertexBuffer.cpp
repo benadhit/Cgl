@@ -22,7 +22,7 @@ void VertexBuffer::Bind()
 
 void VertexBuffer::UnBind()
 {
-
+    glBindVertexArray(0);
 }
 
 void VertexBuffer::SetVertexBufferLayout(std::vector<VertexBufferLayout>& layout)

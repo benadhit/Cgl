@@ -3,7 +3,7 @@
 #include <string>
 
 
-enum ShaderType{
+enum ShaderType {
     VERTEX_SHADER,
     FRAGMENT_SHADER,
 };

@@ -17,6 +17,8 @@ public:
     void Use();
 
     void SetUniformMatrix(const char* name, glm::mat4& value);
+    void SetUniformMatrix(const char* name, glm::mat3& value);
+    void SetUniformMatrix(const char* name, glm::mat2& value);
     void SetUniformVec(const char* name, glm::vec4& value);
     void SetUniformVec(const char* name, glm::vec3& value);
     void SetUniformVec(const char* name, glm::vec2& value);

@@ -92,3 +92,9 @@ void Window::SwapBuffer()
 {
     glfwSwapBuffers(impl_->handle);
 }
+
+void Window::ClearWindow(float r, float g, float b, float a, BufferType type)
+{
+    glClearColor(0.2,0.3,0.3,1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+}

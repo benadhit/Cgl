@@ -10,6 +10,7 @@ add_executable(Cgl
     src/shader.cpp
     src/Linux/LinuxWindow.cpp
     src/VertexBuffer.cpp
+    src/Texture2D.cpp
     src/IndexBuffer.cpp
     src/utils.cpp
     src/main.cpp)

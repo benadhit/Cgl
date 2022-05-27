@@ -53,6 +53,17 @@ void ShaderProgram::SetUniformMatrix(const char* name, glm::mat4& value)
     return glUniformMatrix4fv(GetUniformLocation(name),1, GL_FALSE,glm::value_ptr(value));
 }
 
+void ShaderProgram::SetUniformMatrix(const char* name, glm::mat3& value)
+{
+    return glUniformMatrix3fv(GetUniformLocation(name),1, GL_FALSE,glm::value_ptr(value));
+}
+
+void ShaderProgram::SetUniformMatrix(const char* name, glm::mat2& value)
+{
+    return glUniformMatrix2fv(GetUniformLocation(name),1, GL_FALSE,glm::value_ptr(value));
+}
+
+
 uint32_t ShaderProgram::GetUniformLocation(const char* name)
 {
     return glGetUniformLocation(program_handle,name);
