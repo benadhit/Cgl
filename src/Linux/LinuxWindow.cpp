@@ -1,20 +1,16 @@
-#include "../window.h"
+#include "../Window.h"
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include <memory>
-
+#include "../IO/Keyboard.h"
+#include "../IO/Mouse.h"
+#include "../IO/Joystick.h"
 struct WindowImpl {
     GLFWwindow* handle;
     WindowProperties properties;
     bool IsSuccess_;
     
 };
-
-void FramebufferReszieCallback(GLFWwindow* window, int width, int height)
-{
-
-}
-
 
 Window::Window(const WindowProperties& properties)
     : impl_(std::make_unique<WindowImpl>())
@@ -42,21 +38,35 @@ Window::Window(const WindowProperties& properties)
         impl_->IsSuccess_ = false;
         return;
     }
-    glfwSetWindowUserPointer(impl_->handle, impl_.get());
+    glfwSetWindowUserPointer(impl_->handle, this);
     glfwMakeContextCurrent(impl_->handle);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         impl_-> IsSuccess_ =false; 
     }
     glViewport(properties.x, properties.y, properties.width, properties.height);
+
     glfwSetFramebufferSizeCallback(impl_->handle,
         [](GLFWwindow*window, int width, int height) {
-            auto appData = (WindowImpl*)glfwGetWindowUserPointer(window);
-            appData->properties.width = width;
-            appData->properties.width = height;
-            glViewport(appData->properties.x, appData->properties.y,
-            width, height);
+            auto appData = (Window*)glfwGetWindowUserPointer(window);
+            appData->Resize(width, height);
         } );
+    glfwSetKeyCallback(impl_->handle,[](GLFWwindow* window,int key, int scan_code, int action,int mods) {
+            auto appData = (Window*)glfwGetWindowUserPointer(window);
+            Keyboard::KeyCallBack(*appData, key, scan_code, action, mods);
+            });
+    glfwSetCursorPosCallback(impl_->handle,
+      [](GLFWwindow* window, double x, double y){
+         auto appData = (Window*)glfwGetWindowUserPointer(window);
+          Mouse::CursorPosCallback(*appData, x, y);
+      });
+
+    glfwSetMouseButtonCallback(impl_->handle,
+        [](GLFWwindow* window, int button, int action, int mods){
+         auto appData = (Window*)glfwGetWindowUserPointer(window);
+        Mouse::MouseButtonCallback(*appData, button, action,mods);
+
+        });
 }
 
 Window::~Window() {
@@ -83,7 +93,7 @@ void Window::PollEvent()
     glfwPollEvents();
 }
 
-bool Window::isClosed()
+bool Window::IsClosed()
 {
     return glfwWindowShouldClose(impl_->handle);
 } 
@@ -93,8 +103,18 @@ void Window::SwapBuffer()
     glfwSwapBuffers(impl_->handle);
 }
 
+void Window::Close()
+{
+    glfwSetWindowShouldClose(impl_->handle, GLFW_TRUE);
+}
+
 void Window::ClearWindow(float r, float g, float b, float a, BufferType type)
 {
     glClearColor(0.2,0.3,0.3,1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void* Window::GetBackEndWinddowHandle()
+{
+    return impl_->handle;
 }

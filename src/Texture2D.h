@@ -10,7 +10,6 @@ public:
 
     void Bind(int i);
     bool IsLoaded() const {return success;}
-
     bool LoadTextureFromFile(const char* fileName);
 private:
     uint32_t handle;

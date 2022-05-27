@@ -13,8 +13,20 @@
 #include "VertexBuffer.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
-#include "window.h"
-#include "shader.h"
+#include "Window.h"
+#include "Shader.h"
+#include "IO/Joystick.h"
+#include "IO/Keyboard.h"
+#include "IO/Mouse.h"
+
+glm::mat4 mouseTranform = glm::mat4(1.f);
+
+void ProcesssInput(Window& window, Joystick& joystick)
+{
+    if (Keyboard::KeyWentDown(GLFW_KEY_ESCAPE)) {
+        window.Close();
+    }
+}
 
 int main()
 {
@@ -29,6 +41,7 @@ int main()
     if (!window.IsSuccess()) {
         // error;
     }
+    Joystick mainJ(0);
 
     ShaderProgram program("../asset/vertex_core.vert", "../asset/fragment.frag");
     if (!program.IsSuccess())
@@ -70,11 +83,18 @@ int main()
     index_buferr.CopyDataToGpu(indices, sizeof(indices));
 
     glm::mat4 trans = glm::mat4(1.f);
-    //trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(0, 0, 1.f));
+    // trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(0, 0, 1.f));
     program.Use();
     program.SetUniform("texture1", 0);
-    while (!window.isClosed()) {
-        window.PollEvent();
+
+    mainJ.Update();
+    if (mainJ.IsPresent())
+    {
+        std::cerr<< mainJ.GetName() << "Is Present" << std::endl;
+    }
+
+    while (!window.IsClosed()) {
+        ProcesssInput(window, mainJ);
         window.ClearWindow(0.2,0.3,0.3,1.0);
         texture1.Bind(0);
         program.Use();
@@ -85,6 +105,7 @@ int main()
         index_buferr.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         window.SwapBuffer();
+        window.PollEvent();
     }
     return 0;
 }

@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "Utils.h"
 #include <glad/glad.h>
 #include <glad/glad.h>
 #include <fstream>

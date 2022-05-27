@@ -1,6 +1,7 @@
 
 #include <memory>
 #include <stdint.h>
+#include <functional>
 
 enum class render_backend : uint8_t {
     OPENGL,
@@ -38,12 +39,15 @@ public:
     void ClearWindow(float r, float g , float b , float a, 
         BufferType buffer = BufferType::COLOR_BUFFER);
 
+    void* GetBackEndWinddowHandle();
+
     void PollEvent();
 
-    bool isClosed();
+    bool IsClosed();
 
-    void SwapBuffer();
-        
+    void SwapBuffer();    
+
+    void Close();
 private:
     std::unique_ptr<struct WindowImpl> impl_;
 };

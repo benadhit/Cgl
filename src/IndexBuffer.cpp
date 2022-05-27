@@ -5,6 +5,7 @@ IndexBuffer::IndexBuffer()
 {
     glCreateBuffers(1, &handle);
 }
+
 IndexBuffer::~IndexBuffer()
 {
     glDeleteBuffers(1, &handle);
@@ -18,7 +19,7 @@ void IndexBuffer::Bind()
 
 void IndexBuffer::UnBind()
 {
-
+    // glBindBuffer(G)
 }
 
 void IndexBuffer::CopyDataToGpu(void *data, uint64_t size)
