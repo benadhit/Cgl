@@ -42,33 +42,62 @@ int main()
         // error;
     }
     Joystick mainJ(0);
-
     ShaderProgram program("../asset/vertex_core.vert", "../asset/fragment.frag");
     if (!program.IsSuccess())
     {
         std::cerr << program.GetErrorMsg() << std::endl;
         return -1;
     }
- 
     Texture2D texture1;
     if (!texture1.LoadTextureFromFile("../asset/texture_human.jpg"))
     {
         std::cerr << "load texture failed"<<std::endl;
     }
     float vertices[] = {
-        // pos               // color           // texture coord
-        -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.5f,  0.0, 0.0,
-        -0.5f,  0.5f, 0.0f,  0.5f, 1.0f, 0.75f, 0.0, 1.0,
-         0.5f, -0.5f, 0.0f,  0.6f, 1.0f, 0.2f,  1.0, 0.0,
-         0.5f,  0.5f, 0.0f,  1.0f, 0.2f, 1.0f,  1.0, 1,0,
-    };
-    uint32_t indices[] = {
-        0,1,2,
-        3,1,2
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     std::vector<VertexBufferLayout> layout = {
-        {3, 3 * sizeof(float), GL_FLOAT},
         {3, 3 * sizeof(float), GL_FLOAT},
         {2, 2 * sizeof(float), GL_FLOAT},
     };
@@ -78,12 +107,10 @@ int main()
     vertex_buffer.CopyDataToGpu(vertices, sizeof(vertices));
     vertex_buffer.SetVertexBufferLayout(layout);
 
-    IndexBuffer index_buferr;
-    index_buferr.Bind();
-    index_buferr.CopyDataToGpu(indices, sizeof(indices));
-
     glm::mat4 trans = glm::mat4(1.f);
-    // trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(0, 0, 1.f));
+    trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(1, 0, 0.f));
+    trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(0, 1, 0.f));
+   
     program.Use();
     program.SetUniform("texture1", 0);
 
@@ -92,18 +119,18 @@ int main()
     {
         std::cerr<< mainJ.GetName() << "Is Present" << std::endl;
     }
-
+    glEnable(GL_DEPTH_TEST);
+    
     while (!window.IsClosed()) {
         ProcesssInput(window, mainJ);
         window.ClearWindow(0.2,0.3,0.3,1.0);
         texture1.Bind(0);
         program.Use();
-        // trans = glm::rotate(trans,glm::radians((float)glfwGetTime()/20.f), glm::vec3(0, 0, 1.f));
+        trans = glm::rotate(trans,glm::radians((float)glfwGetTime()/20.f), glm::vec3(0, 0, 1.f));
         program.SetUniformMatrix("transform", trans);
     
         vertex_buffer.Bind();
-        index_buferr.Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         window.SwapBuffer();
         window.PollEvent();
     }

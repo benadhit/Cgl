@@ -36,8 +36,8 @@ public:
 
     bool IsSuccess();
     bool Resize(int width, int height);
-    void ClearWindow(float r, float g , float b , float a, 
-        BufferType buffer = BufferType::COLOR_BUFFER);
+    void ClearWindow(float r, float g, float b, float a, 
+        BufferType buffer = BufferType::ALL);
 
     void* GetBackEndWinddowHandle();
 

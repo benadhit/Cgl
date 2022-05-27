@@ -9,7 +9,6 @@ struct WindowImpl {
     GLFWwindow* handle;
     WindowProperties properties;
     bool IsSuccess_;
-    
 };
 
 Window::Window(const WindowProperties& properties)
@@ -110,8 +109,22 @@ void Window::Close()
 
 void Window::ClearWindow(float r, float g, float b, float a, BufferType type)
 {
-    glClearColor(0.2,0.3,0.3,1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    switch (type) {
+    case BufferType::COLOR_BUFFER:
+       glClear(GL_COLOR_BUFFER_BIT);
+        break;
+    case BufferType::DEPTH_BUFFER:
+        glClearColor(r,g,b,a);
+       glClear(GL_DEPTH_BUFFER_BIT);
+        break;
+    case BufferType::ALL:
+        glClearColor(r,g,b,a);
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+       break;
+    default:
+        glClearColor(r,g,b,a);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);   
+    }
 }
 
 void* Window::GetBackEndWinddowHandle()

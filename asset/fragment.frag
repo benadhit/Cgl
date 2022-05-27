@@ -1,10 +1,8 @@
 #version 440 core
 out vec4 FragColor;
-in vec3 outColor;
 in vec2 outCoord;
 
 uniform sampler2D texture1;
-
 
 void main()
 {
