@@ -11,21 +11,41 @@
 #include "IndexBuffer.h"
 #include "Texture2D.h"
 #include "VertexBuffer.h"
-#include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/fwd.hpp"
 #include "Window.h"
 #include "Shader.h"
 #include "IO/Joystick.h"
 #include "IO/Keyboard.h"
 #include "IO/Mouse.h"
+#include "Camera.h"
+#include "glm/trigonometric.hpp"
+
 
 glm::mat4 mouseTranform = glm::mat4(1.f);
+Camera gCamera(glm::vec3(0.0,0.0,3.f));
+float deltaTime =0.f;
+float lastFrame = 0.f;
 
-void ProcesssInput(Window& window, Joystick& joystick)
+
+void ProcesssInput(Window& window, Joystick& joystick,double dt)
 {
     if (Keyboard::KeyWentDown(GLFW_KEY_ESCAPE)) {
         window.Close();
     }
+    if (Keyboard::Key(GLFW_KEY_W))
+    {
+        gCamera.UpdateCameraPos(CameraDirection::FORWARD, dt);
+    } else if (Keyboard::Key(GLFW_KEY_S))
+    {
+        gCamera.UpdateCameraPos(CameraDirection::BACKWARD, dt);
+    } else if (Keyboard::Key(GLFW_KEY_A))
+    {
+        gCamera.UpdateCameraPos(CameraDirection::LEFT, dt);
+    } else if (Keyboard::Key(GLFW_KEY_D))
+    {
+        gCamera.UpdateCameraPos(CameraDirection::RIGHT, dt);
+    }   
 }
 
 int main()
@@ -42,6 +62,8 @@ int main()
         // error;
     }
     Joystick mainJ(0);
+ 
+
     ShaderProgram program("../asset/vertex_core.vert", "../asset/fragment.frag");
     if (!program.IsSuccess())
     {
@@ -107,7 +129,6 @@ int main()
     vertex_buffer.CopyDataToGpu(vertices, sizeof(vertices));
     vertex_buffer.SetVertexBufferLayout(layout);
 
-
     program.Use();
     program.SetUniform("texture1", 0);
 
@@ -126,12 +147,20 @@ int main()
     glm::mat4 projection = glm::mat4(1.f);
 
     while (!window.IsClosed()) {
-        ProcesssInput(window, mainJ);
+        auto currentTime =glfwGetTime();
+        deltaTime =currentTime - lastFrame;
+        lastFrame = currentTime;
+
+        ProcesssInput(window, mainJ, deltaTime);
+        
         window.ClearWindow(0.2,0.3,0.3,1.0);
         texture1.Bind(0);
         program.Use();
         model = glm::rotate(model,glm::radians((float)glfwGetTime()/20.f), glm::vec3(0, 0, 1.f));
         program.SetUniformMatrix("model", model);
+        view = gCamera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(45.0f), (float)1920.0f/1080.0f,0.1f, 1000.0f);
+      
         program.SetUniformMatrix("view", view);
         program.SetUniformMatrix("projection", projection);
     

@@ -11,6 +11,7 @@ add_executable(Cgl
     src/Linux/LinuxWindow.cpp
     src/VertexBuffer.cpp
     src/Texture2D.cpp
+    src/Camera.cpp
     src/IndexBuffer.cpp
     src/IO/Joystick.cpp
     src/IO/Keyboard.cpp

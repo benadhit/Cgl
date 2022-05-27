@@ -11,6 +11,37 @@ struct WindowImpl {
     bool IsSuccess_;
 };
 
+static void SetupCallback(WindowImpl* impl_)
+{
+    glfwSetFramebufferSizeCallback(impl_->handle,
+        [](GLFWwindow*window, int width, int height) {
+            auto appData = (Window*)glfwGetWindowUserPointer(window);
+            appData->Resize(width, height);
+    });
+    glfwSetKeyCallback(impl_->handle,[](GLFWwindow* window,int key, int scan_code, int action,int mods) {
+            auto appData = (Window*)glfwGetWindowUserPointer(window);
+            Keyboard::KeyCallBack(*appData, key, scan_code, action, mods);
+    });
+
+    glfwSetCursorPosCallback(impl_->handle,
+      [](GLFWwindow* window, double x, double y){
+         auto appData = (Window*)glfwGetWindowUserPointer(window);
+          Mouse::CursorPosCallback(*appData, x, y);
+    });
+
+    glfwSetMouseButtonCallback(impl_->handle,
+        [](GLFWwindow* window, int button, int action, int mods){
+         auto appData = (Window*)glfwGetWindowUserPointer(window);
+        Mouse::MouseButtonCallback(*appData, button, action,mods);
+    });
+    glfwSetScrollCallback(impl_->handle, [](GLFWwindow* window,double x, double y
+    ){
+        auto appData = (Window*)glfwGetWindowUserPointer(window);
+        Mouse::MouseWheelCallback(*appData, x, y);
+    });
+}
+
+
 Window::Window(const WindowProperties& properties)
     : impl_(std::make_unique<WindowImpl>())
 {
@@ -44,28 +75,9 @@ Window::Window(const WindowProperties& properties)
         impl_-> IsSuccess_ =false; 
     }
     glViewport(properties.x, properties.y, properties.width, properties.height);
-
-    glfwSetFramebufferSizeCallback(impl_->handle,
-        [](GLFWwindow*window, int width, int height) {
-            auto appData = (Window*)glfwGetWindowUserPointer(window);
-            appData->Resize(width, height);
-        } );
-    glfwSetKeyCallback(impl_->handle,[](GLFWwindow* window,int key, int scan_code, int action,int mods) {
-            auto appData = (Window*)glfwGetWindowUserPointer(window);
-            Keyboard::KeyCallBack(*appData, key, scan_code, action, mods);
-            });
-    glfwSetCursorPosCallback(impl_->handle,
-      [](GLFWwindow* window, double x, double y){
-         auto appData = (Window*)glfwGetWindowUserPointer(window);
-          Mouse::CursorPosCallback(*appData, x, y);
-      });
-
-    glfwSetMouseButtonCallback(impl_->handle,
-        [](GLFWwindow* window, int button, int action, int mods){
-         auto appData = (Window*)glfwGetWindowUserPointer(window);
-        Mouse::MouseButtonCallback(*appData, button, action,mods);
-
-        });
+    SetupCallback(impl_.get());
+    // disable cursor
+    // glfwSetInputMode(impl_->handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 Window::~Window() {
