@@ -6,11 +6,12 @@ layout (location =1) in vec2 aTextureCoord;
 out vec3 outColor;
 out vec2 outCoord;
 
-uniform mat4 transform;
-
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main()
 {
-    gl_Position = transform * vec4(aPos, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
     outCoord = aTextureCoord;
 }

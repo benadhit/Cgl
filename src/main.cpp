@@ -107,10 +107,7 @@ int main()
     vertex_buffer.CopyDataToGpu(vertices, sizeof(vertices));
     vertex_buffer.SetVertexBufferLayout(layout);
 
-    glm::mat4 trans = glm::mat4(1.f);
-    trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(1, 0, 0.f));
-    trans = glm::rotate(trans, glm::radians(45.f), glm::vec3(0, 1, 0.f));
-   
+
     program.Use();
     program.SetUniform("texture1", 0);
 
@@ -119,15 +116,24 @@ int main()
     {
         std::cerr<< mainJ.GetName() << "Is Present" << std::endl;
     }
-    glEnable(GL_DEPTH_TEST);
     
+    glEnable(GL_DEPTH_TEST);
+    glm::mat4 model = glm::mat4(1.f);
+    model = glm::rotate(model, glm::radians(45.f), glm::vec3(1, 0, 0.f));
+    model = glm::rotate(model, glm::radians(45.f), glm::vec3(0, 1, 0.f));
+   
+    glm::mat4 view = glm::mat4(1.f);
+    glm::mat4 projection = glm::mat4(1.f);
+
     while (!window.IsClosed()) {
         ProcesssInput(window, mainJ);
         window.ClearWindow(0.2,0.3,0.3,1.0);
         texture1.Bind(0);
         program.Use();
-        trans = glm::rotate(trans,glm::radians((float)glfwGetTime()/20.f), glm::vec3(0, 0, 1.f));
-        program.SetUniformMatrix("transform", trans);
+        model = glm::rotate(model,glm::radians((float)glfwGetTime()/20.f), glm::vec3(0, 0, 1.f));
+        program.SetUniformMatrix("model", model);
+        program.SetUniformMatrix("view", view);
+        program.SetUniformMatrix("projection", projection);
     
         vertex_buffer.Bind();
         glDrawArrays(GL_TRIANGLES, 0, 36);
